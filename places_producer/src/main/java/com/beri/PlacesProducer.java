@@ -1,5 +1,6 @@
 package com.beri;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
@@ -13,7 +14,9 @@ import org.springframework.jms.support.converter.MappingJackson2MessageConverter
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 import java.util.function.Function;
 
 /**
@@ -37,11 +40,16 @@ public class PlacesProducer
 
     @Bean
     public JmsListenerContainerFactory<?> myFactory(ConnectionFactory c,
-                                                   DefaultJmsListenerContainerFactoryConfigurer conn)
-    {
+                                                   DefaultJmsListenerContainerFactoryConfigurer conn) throws JMSException {
+
         DefaultJmsListenerContainerFactory dd = new DefaultJmsListenerContainerFactory();
         conn.configure(dd, c);
         return dd;
+    }
+
+    @Bean
+    public ConnectionFactory getConnectionFactory(){
+        return new ActiveMQConnectionFactory("tcp://localhost:61616");
     }
 
     @Bean
